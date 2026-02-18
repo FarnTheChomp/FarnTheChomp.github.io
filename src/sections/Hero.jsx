@@ -78,17 +78,6 @@ export default function Hero() {
                         </div>
                     </motion.div>
                 </motion.div>
-
-                {/* Moth label */}
-                <motion.div
-                    className="hero__moth-label"
-                    initial={{ opacity: 0, x: 40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.2, duration: 0.8 }}
-                >
-                    <div className="hero__moth-line" />
-                    <span>Moth</span>
-                </motion.div>
             </div>
 
             {/* Scroll indicator */}

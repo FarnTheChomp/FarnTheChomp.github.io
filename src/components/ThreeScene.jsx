@@ -1,26 +1,26 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-function ParticleField() {
+function StarField() {
     const ref = useRef();
-    const count = 2000;
+    const count = 3000;
 
     const positions = useMemo(() => {
         const pos = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            pos[i * 3] = (Math.random() - 0.5) * 20;
-            pos[i * 3 + 1] = (Math.random() - 0.5) * 20;
-            pos[i * 3 + 2] = (Math.random() - 0.5) * 20;
+            pos[i * 3] = (Math.random() - 0.5) * 30;
+            pos[i * 3 + 1] = (Math.random() - 0.5) * 30;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 15;
         }
         return pos;
     }, []);
 
     useFrame((state) => {
         if (ref.current) {
-            ref.current.rotation.x = state.clock.elapsedTime * 0.02;
-            ref.current.rotation.y = state.clock.elapsedTime * 0.03;
+            ref.current.rotation.y = state.clock.elapsedTime * 0.01;
+            ref.current.rotation.x = state.clock.elapsedTime * 0.005;
         }
     });
 
@@ -28,127 +28,133 @@ function ParticleField() {
         <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
             <PointMaterial
                 transparent
-                color="#7c3aed"
-                size={0.04}
+                color="#ffffff"
+                size={0.035}
                 sizeAttenuation
                 depthWrite={false}
-                opacity={0.6}
+                opacity={0.85}
             />
         </Points>
     );
 }
 
-function MothWings() {
-    const groupRef = useRef();
-    const time = useRef(0);
+function ColoredStars() {
+    const ref = useRef();
+    const count = 500;
 
-    const wingGeometry = useMemo(() => {
-        const shape = new THREE.Shape();
-        // Left wing
-        shape.moveTo(0, 0);
-        shape.bezierCurveTo(-0.5, 0.8, -2.5, 1.2, -2.8, 0.3);
-        shape.bezierCurveTo(-3.2, -0.5, -2.0, -1.5, -0.8, -1.0);
-        shape.bezierCurveTo(-0.3, -0.8, 0, -0.3, 0, 0);
-        return new THREE.ShapeGeometry(shape);
-    }, []);
-
-    const wingGeometryRight = useMemo(() => {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0);
-        shape.bezierCurveTo(0.5, 0.8, 2.5, 1.2, 2.8, 0.3);
-        shape.bezierCurveTo(3.2, -0.5, 2.0, -1.5, 0.8, -1.0);
-        shape.bezierCurveTo(0.3, -0.8, 0, -0.3, 0, 0);
-        return new THREE.ShapeGeometry(shape);
-    }, []);
-
-    const lowerWingLeft = useMemo(() => {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, -0.1);
-        shape.bezierCurveTo(-0.3, -0.5, -1.8, -0.8, -2.0, -1.8);
-        shape.bezierCurveTo(-2.2, -2.5, -1.0, -2.8, -0.4, -2.2);
-        shape.bezierCurveTo(-0.1, -1.8, 0, -1.0, 0, -0.1);
-        return new THREE.ShapeGeometry(shape);
-    }, []);
-
-    const lowerWingRight = useMemo(() => {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, -0.1);
-        shape.bezierCurveTo(0.3, -0.5, 1.8, -0.8, 2.0, -1.8);
-        shape.bezierCurveTo(2.2, -2.5, 1.0, -2.8, 0.4, -2.2);
-        shape.bezierCurveTo(0.1, -1.8, 0, -1.0, 0, -0.1);
-        return new THREE.ShapeGeometry(shape);
+    const { positions, colors } = useMemo(() => {
+        const pos = new Float32Array(count * 3);
+        const col = new Float32Array(count * 3);
+        const palette = [
+            [0.48, 0.23, 0.93], // violet
+            [0.75, 0.15, 0.83], // fuchsia
+            [0.02, 0.71, 0.83], // cyan
+            [0.96, 0.62, 0.04], // amber
+            [0.88, 0.11, 0.28], // rose
+        ];
+        for (let i = 0; i < count; i++) {
+            pos[i * 3] = (Math.random() - 0.5) * 30;
+            pos[i * 3 + 1] = (Math.random() - 0.5) * 30;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 15;
+            const c = palette[Math.floor(Math.random() * palette.length)];
+            col[i * 3] = c[0];
+            col[i * 3 + 1] = c[1];
+            col[i * 3 + 2] = c[2];
+        }
+        return { positions: pos, colors: col };
     }, []);
 
     useFrame((state) => {
-        time.current = state.clock.elapsedTime;
-        if (groupRef.current) {
-            groupRef.current.rotation.y = Math.sin(time.current * 0.4) * 0.15;
-            groupRef.current.position.y = Math.sin(time.current * 0.6) * 0.15;
-            // Flap wings
-            const flapAngle = Math.sin(time.current * 1.5) * 0.12;
-            groupRef.current.children.forEach((child, i) => {
-                if (i === 0) child.rotation.y = -flapAngle;
-                if (i === 1) child.rotation.y = flapAngle;
-                if (i === 2) child.rotation.y = -flapAngle * 0.7;
-                if (i === 3) child.rotation.y = flapAngle * 0.7;
-            });
+        if (ref.current) {
+            ref.current.rotation.y = -state.clock.elapsedTime * 0.008;
         }
     });
 
-    const wingMat = (
-        <meshBasicMaterial
-            color="#7c3aed"
-            transparent
-            opacity={0.25}
-            side={THREE.DoubleSide}
-        />
-    );
-
-    const wingMatGlow = (
-        <meshBasicMaterial
-            color="#c026d3"
-            transparent
-            opacity={0.15}
-            side={THREE.DoubleSide}
-        />
-    );
-
     return (
-        <group ref={groupRef}>
-            <mesh geometry={wingGeometry}>{wingMat}</mesh>
-            <mesh geometry={wingGeometryRight}>{wingMat}</mesh>
-            <mesh geometry={lowerWingLeft}>{wingMatGlow}</mesh>
-            <mesh geometry={lowerWingRight}>{wingMatGlow}</mesh>
-            {/* Body */}
-            <mesh position={[0, -0.5, 0]}>
-                <capsuleGeometry args={[0.08, 1.2, 4, 8]} />
-                <meshBasicMaterial color="#9d4edd" transparent opacity={0.7} />
-            </mesh>
-            {/* Antennae */}
-            <mesh position={[-0.08, 0.55, 0]} rotation={[0, 0, -0.4]}>
-                <cylinderGeometry args={[0.01, 0.005, 0.8, 4]} />
-                <meshBasicMaterial color="#c026d3" transparent opacity={0.5} />
-            </mesh>
-            <mesh position={[0.08, 0.55, 0]} rotation={[0, 0, 0.4]}>
-                <cylinderGeometry args={[0.01, 0.005, 0.8, 4]} />
-                <meshBasicMaterial color="#c026d3" transparent opacity={0.5} />
-            </mesh>
-        </group>
+        <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
+            <PointMaterial
+                transparent
+                vertexColors
+                size={0.06}
+                sizeAttenuation
+                depthWrite={false}
+                opacity={0.9}
+            />
+        </Points>
     );
 }
+
+// Shooting star as a line that animates across the screen
+function ShootingStar({ delay, startX, startY, angle }) {
+    const ref = useRef();
+    const trailRef = useRef();
+    const progress = useRef(-delay);
+    const duration = 1.8;
+    const length = 4;
+
+    const direction = useMemo(() => {
+        const rad = (angle * Math.PI) / 180;
+        return new THREE.Vector3(Math.cos(rad), Math.sin(rad), 0);
+    }, [angle]);
+
+    const start = useMemo(() => new THREE.Vector3(startX, startY, 0), [startX, startY]);
+
+    useFrame((state, delta) => {
+        progress.current += delta;
+        const cycle = ((progress.current % (duration + delay)) + duration + delay) % (duration + delay);
+        const t = cycle / duration;
+
+        if (ref.current && t >= 0 && t <= 1) {
+            const head = start.clone().addScaledVector(direction, t * 20);
+            const tail = head.clone().addScaledVector(direction, -length * Math.min(t, 0.3) / 0.3);
+
+            const positions = ref.current.geometry.attributes.position.array;
+            positions[0] = tail.x; positions[1] = tail.y; positions[2] = tail.z;
+            positions[3] = head.x; positions[4] = head.y; positions[5] = head.z;
+            ref.current.geometry.attributes.position.needsUpdate = true;
+
+            const opacity = t < 0.1 ? t / 0.1 : t > 0.8 ? (1 - t) / 0.2 : 1;
+            ref.current.material.opacity = opacity * 0.9;
+            ref.current.visible = true;
+        } else if (ref.current) {
+            ref.current.visible = false;
+        }
+    });
+
+    const lineGeo = useMemo(() => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        return geo;
+    }, []);
+
+    return (
+        <line ref={ref} geometry={lineGeo}>
+            <lineBasicMaterial color="#c8b8ff" transparent opacity={0} linewidth={1} />
+        </line>
+    );
+}
+
+const shootingStars = [
+    { delay: 0, startX: -12, startY: 6, angle: -28 },
+    { delay: 2.5, startX: -8, startY: 8, angle: -32 },
+    { delay: 5, startX: -14, startY: 4, angle: -25 },
+    { delay: 1.2, startX: -6, startY: 7, angle: -30 },
+    { delay: 3.8, startX: -10, startY: 5, angle: -35 },
+    { delay: 7, startX: -13, startY: 9, angle: -22 },
+];
 
 export default function ThreeScene() {
     return (
         <Canvas
-            camera={{ position: [0, 0, 6], fov: 60 }}
+            camera={{ position: [0, 0, 8], fov: 65 }}
             style={{ position: 'absolute', inset: 0 }}
             gl={{ antialias: true, alpha: true }}
         >
-            <ambientLight intensity={0.5} />
-            <pointLight position={[5, 5, 5]} intensity={1} color="#7c3aed" />
-            <pointLight position={[-5, -5, 5]} intensity={0.5} color="#c026d3" />
-            <ParticleField />
-            <MothWings />
+            <StarField />
+            <ColoredStars />
+            {shootingStars.map((s, i) => (
+                <ShootingStar key={i} {...s} />
+            ))}
         </Canvas>
     );
 }
