@@ -17,11 +17,6 @@ const itemVariants = {
 export default function Hero() {
     return (
         <section id="hero" className="hero">
-            {/* Gradient background */}
-            <div className="hero__gradient" />
-            <div className="hero__gradient hero__gradient--2" />
-            <div className="hero__gradient hero__gradient--3" />
-
             {/* Three.js canvas */}
             <div className="hero__canvas">
                 <ThreeScene />
