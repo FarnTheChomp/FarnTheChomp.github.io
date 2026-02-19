@@ -36,7 +36,7 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: var(--bg-deep);
+  background-color: #000000;
   color: var(--text-primary);
   overflow-x: hidden;
   line-height: 1.6;
@@ -89,7 +89,7 @@ body::before {
   background-size: 200px 200px;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.5;
+  opacity: 0.1;
 }
 
 /* Utility */

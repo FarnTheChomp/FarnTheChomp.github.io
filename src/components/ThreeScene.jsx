@@ -29,7 +29,7 @@ function StarField() {
             <PointMaterial
                 transparent
                 color="#ffffff"
-                size={0.05}
+                size={0.08}
                 sizeAttenuation
                 depthWrite={false}
                 opacity={1}
@@ -75,7 +75,7 @@ function ColoredStars() {
             <PointMaterial
                 transparent
                 vertexColors
-                size={0.08}
+                size={0.12}
                 sizeAttenuation
                 depthWrite={false}
                 opacity={1}
